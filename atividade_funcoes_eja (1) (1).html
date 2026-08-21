@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Atividade interativa sobre grandezas, variáveis e funções para estudantes da EJA.">
+  <title>Grandezas em Movimento — Atividade Interativa</title>
+  <style>
+    :root {
+      --ink: #10283d;
+      --ink-soft: #44586a;
+      --paper: #f7f2e8;
+      --surface: #fffdf8;
+      --surface-2: #eef5f2;
+      --line: #d7ddd8;
+      --teal: #177f78;
+      --teal-dark: #0d625d;
+      --orange: #e76f3c;
+      --yellow: #f4c95d;
+      --green: #247a4a;
+      --red: #b43c3c;
+      --shadow: 0 18px 50px rgba(16, 40, 61, 0.10);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button, select { cursor: pointer; }
+
+    .skip-link {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 100;
+      padding: 10px 14px;
+      color: white;
+      background: var(--ink);
+      transform: translateY(-150%);
+    }
+
+    .skip-link:focus { transform: translateY(0); }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      display: grid;
+      grid-template-columns: minmax(190px, 1fr) minmax(220px, 520px) auto;
+      align-items: center;
+      gap: 20px;
+      padding: 14px clamp(18px, 4vw, 64px);
+      color: white;
+      background: rgba(16, 40, 61, 0.97);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      place-items: center;
+      color: var(--ink);
+      background: var(--yellow);
+      border-radius: 10px;
+      transform: rotate(-3deg);
+    }
+
+    .progress-wrap { min-width: 0; }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 6px;
+      color: #d8e3e8;
+      font-size: 0.78rem;
+    }
+
+    .progress-track {
+      height: 8px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.16);
+      border-radius: 20px;
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: var(--yellow);
+      border-radius: inherit;
+      transition: width 300ms ease;
+    }
+
+    .score-box {
+      min-width: 88px;
+      padding: 7px 12px;
+      color: var(--ink);
+      text-align: center;
+      background: white;
+      border-radius: 12px;
+      font-weight: 900;
+    }
+
+    .score-box small {
+      display: block;
+      color: var(--ink-soft);
+      font-size: 0.67rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    main { overflow: hidden; }
+
+    .hero {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+      gap: clamp(34px, 7vw, 90px);
+      align-items: center;
+      max-width: 1240px;
+      min-height: 580px;
+      margin: 0 auto;
+      padding: 80px clamp(22px, 5vw, 72px) 70px;
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--teal-dark);
+      font-size: 0.82rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      max-width: 780px;
+      margin-bottom: 22px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(3.1rem, 7vw, 6.7rem);
+      line-height: 0.92;
+      letter-spacing: -0.055em;
+    }
+
+    h1 em {
+      color: var(--orange);
+      font-weight: inherit;
+    }
+
+    .lead {
+      max-width: 690px;
+      margin-bottom: 30px;
+      color: var(--ink-soft);
+      font-size: clamp(1.05rem, 2vw, 1.28rem);
+    }
+
+    .primary-btn, .secondary-btn, .text-btn {
+      min-height: 46px;
+      border: 0;
+      border-radius: 12px;
+      font-weight: 850;
+      transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
+    }
+
+    .primary-btn {
+      padding: 12px 18px;
+      color: white;
+      background: var(--teal);
+      box-shadow: 0 8px 20px rgba(23, 127, 120, 0.22);
+    }
+
+    .primary-btn:hover { background: var(--teal-dark); transform: translateY(-1px); }
+
+    .secondary-btn {
+      padding: 11px 17px;
+      color: var(--ink);
+      background: white;
+      border: 1px solid var(--line);
+    }
+
+    .secondary-btn:hover { border-color: var(--teal); transform: translateY(-1px); }
+
+    .text-btn {
+      min-height: auto;
+      padding: 8px 0;
+      color: var(--teal-dark);
+      background: transparent;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible {
+      outline: 3px solid var(--yellow);
+      outline-offset: 3px;
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 410px;
+    }
+
+    .axis-card {
+      position: absolute;
+      inset: 20px 0 0 20px;
+      min-height: 350px;
+      background: var(--ink);
+      border: 10px solid white;
+      box-shadow: var(--shadow);
+      transform: rotate(2deg);
+    }
+
+    .axis-card::before, .axis-card::after {
+      position: absolute;
+      content: "";
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .axis-card::before { left: 52px; bottom: 48px; width: calc(100% - 85px); height: 2px; }
+    .axis-card::after { left: 52px; bottom: 48px; width: 2px; height: calc(100% - 80px); }
+
+    .graph-line {
+      position: absolute;
+      left: 72px;
+      bottom: 78px;
+      width: 72%;
+      height: 8px;
+      background: var(--yellow);
+      transform: rotate(-28deg);
+      transform-origin: left center;
+    }
+
+    .dot {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: var(--orange);
+      border: 4px solid white;
+      border-radius: 50%;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
+    }
+
+    .dot.one { left: 25%; bottom: 31%; }
+    .dot.two { left: 49%; bottom: 51%; }
+    .dot.three { left: 72%; bottom: 70%; }
+
+    .formula-note {
+      position: absolute;
+      right: -8px;
+      top: 0;
+      padding: 16px 18px;
+      color: var(--ink);
+      background: var(--yellow);
+      box-shadow: 7px 8px 0 rgba(16, 40, 61, 0.18);
+      font-family: Georgia, serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      transform: rotate(-4deg);
+    }
+
+    .concept-strip {
+      padding: 34px clamp(22px, 5vw, 72px);
+      color: white;
+      background: var(--teal-dark);
+    }
+
+    .concept-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      max-width: 1100px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+    }
+
+    .concept-item { padding: 22px; background: var(--teal-dark); }
+    .concept-item strong { display: block; margin-bottom: 6px; color: var(--yellow); font-size: 1.05rem; }
+    .concept-item p { margin: 0; color: #e5f3f1; font-size: 0.93rem; }
+
+    .activity-shell {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 78px clamp(18px, 4vw, 56px) 100px;
+    }
+
+    .section-heading {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 30px;
+      align-items: end;
+      margin-bottom: 28px;
+    }
+
+    .section-heading h2 {
+      margin-bottom: 8px;
+      font-family: Georgia, serif;
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .section-heading p { max-width: 670px; margin-bottom: 0; color: var(--ink-soft); }
+
+    .scenario-list {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 34px;
+    }
+
+    .scenario-btn {
+      min-height: 132px;
+      padding: 17px;
+      color: var(--ink);
+      text-align: left;
+      background: transparent;
+      border: 1px solid #bfc9c4;
+      border-radius: 16px;
+    }
+
+    .scenario-btn:hover { background: rgba(255, 255, 255, 0.62); border-color: var(--teal); }
+    .scenario-btn.active { color: white; background: var(--ink); border-color: var(--ink); box-shadow: 0 12px 28px rgba(16, 40, 61, 0.18); }
+    .scenario-btn .icon { display: block; margin-bottom: 18px; font-size: 1.55rem; }
+    .scenario-btn strong { display: block; font-size: 1rem; }
+    .scenario-btn small { color: inherit; opacity: 0.72; }
+
+    .case-intro {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: center;
+      margin-bottom: 18px;
+      padding: clamp(24px, 4vw, 42px);
+      color: white;
+      background: var(--ink);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .case-intro .label { color: var(--yellow); font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.14em; }
+    .case-intro h2 { margin: 6px 0 12px; font-family: Georgia, serif; font-size: clamp(2rem, 4vw, 3.4rem); line-height: 1; }
+    .case-intro p { max-width: 800px; margin: 0; color: #dce6ea; font-size: 1.05rem; }
+
+    .case-number {
+      display: grid;
+      width: 86px;
+      height: 86px;
+      place-items: center;
+      color: var(--ink);
+      background: var(--yellow);
+      border-radius: 50%;
+      font-family: Georgia, serif;
+      font-size: 2.2rem;
+      font-weight: 900;
+    }
+
+    .stage {
+      display: grid;
+      grid-template-columns: 210px minmax(0, 1fr);
+      gap: clamp(24px, 5vw, 64px);
+      padding: 46px 0;
+      border-bottom: 1px solid #cbd3ce;
+    }
+
+    .stage:last-of-type { border-bottom: 0; }
+
+    .stage-index {
+      position: sticky;
+      top: 100px;
+      align-self: start;
+    }
+
+    .stage-index span {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--orange);
+      font-size: 0.78rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+
+    .stage-index h3 { margin: 0; font-family: Georgia, serif; font-size: 1.85rem; line-height: 1.05; }
+    .stage-content > p:first-child { color: var(--ink-soft); }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin: 22px 0;
+    }
+
+    label { display: block; font-weight: 800; }
+    label .hint { display: block; margin-bottom: 7px; color: var(--ink-soft); font-size: 0.82rem; font-weight: 500; }
+
+    input, select, textarea {
+      width: 100%;
+      margin-top: 8px;
+      color: var(--ink);
+      background: white;
+      border: 1px solid #aebbb5;
+      border-radius: 10px;
+    }
+
+    input, select { min-height: 48px; padding: 10px 12px; }
+    textarea { min-height: 112px; padding: 12px; resize: vertical; }
+
+    .formula-builder {
+      display: grid;
+      grid-template-columns: minmax(110px, auto) 120px auto 120px auto;
+      gap: 10px;
+      align-items: center;
+      margin: 20px 0 26px;
+      padding: 20px;
+      background: var(--surface-2);
+      border-left: 5px solid var(--teal);
+    }
+
+    .formula-builder input { margin: 0; text-align: center; font-weight: 900; }
+    .formula-symbol { font-family: Georgia, serif; font-size: 1.5rem; font-weight: 800; }
+
+    .feedback {
+      display: none;
+      margin-top: 16px;
+      padding: 13px 15px;
+      border-left: 4px solid currentColor;
+      background: white;
+      font-weight: 700;
+    }
+
+    .feedback.show { display: block; }
+    .feedback.success { color: var(--green); }
+    .feedback.error { color: var(--red); }
+    .feedback.info { color: var(--teal-dark); }
+
+    .table-wrap { overflow-x: auto; margin: 22px 0; border: 1px solid var(--line); border-radius: 14px; }
+
+    table { width: 100%; border-collapse: collapse; background: white; }
+    th, td { padding: 13px 14px; text-align: center; border-bottom: 1px solid var(--line); }
+    th { color: white; background: var(--ink); font-size: 0.84rem; }
+    tr:last-child td { border-bottom: 0; }
+    td:first-child { font-weight: 900; }
+    td input { width: 130px; margin: 0 auto; text-align: center; }
+    td input.correct { border: 2px solid var(--green); background: #eef8f2; }
+    td input.incorrect { border: 2px solid var(--red); background: #fff3f3; }
+
+    .graph-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 220px;
+      gap: 20px;
+      align-items: stretch;
+      margin: 22px 0;
+    }
+
+    .canvas-wrap {
+      min-width: 0;
+      padding: 10px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+
+    canvas { display: block; width: 100%; height: 390px; }
+
+    .point-controls {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 18px;
+      color: white;
+      background: var(--teal-dark);
+      border-radius: 14px;
+    }
+
+    .point-controls label { margin-bottom: 10px; }
+    .point-controls input, .point-controls select { margin-bottom: 8px; }
+    .point-controls .primary-btn { margin-top: 8px; color: var(--ink); background: var(--yellow); }
+    .point-count { margin: 16px 0 0; color: #dff0ee; font-size: 0.86rem; }
+
+    .callout {
+      margin: 20px 0;
+      padding: 17px 19px;
+      background: #fff6dc;
+      border: 1px solid #e7c86f;
+      border-radius: 12px;
+    }
+
+    .completion {
+      display: none;
+      margin-top: 40px;
+      padding: 30px;
+      color: white;
+      text-align: center;
+      background: var(--green);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .completion.show { display: block; }
+    .completion strong { display: block; margin-bottom: 6px; font-family: Georgia, serif; font-size: 2rem; }
+
+    .teacher-guide {
+      max-width: 1080px;
+      margin: 0 auto 80px;
+      padding: 0 clamp(18px, 4vw, 56px);
+    }
+
+    .teacher-guide details {
+      color: white;
+      background: var(--ink);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .teacher-guide summary { padding: 24px 28px; font-size: 1.1rem; font-weight: 900; cursor: pointer; }
+    .guide-content { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; padding: 0 28px 30px; color: #dce7eb; }
+    .guide-content h3 { color: var(--yellow); font-size: 1rem; }
+    .guide-content ul { margin: 0; padding-left: 20px; }
+
+    footer {
+      padding: 28px;
+      color: #dbe5e9;
+      text-align: center;
+      background: var(--ink);
+      font-size: 0.88rem;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 900px) {
+      .topbar { grid-template-columns: 1fr auto; }
+      .progress-wrap { grid-column: 1 / -1; grid-row: 2; }
+      .hero { grid-template-columns: 1fr; min-height: auto; padding-top: 60px; }
+      .hero-visual { min-height: 330px; max-width: 500px; width: 100%; }
+      .axis-card { min-height: 290px; }
+      .scenario-list { grid-template-columns: repeat(2, 1fr); }
+      .stage { grid-template-columns: 1fr; gap: 18px; }
+      .stage-index { position: static; }
+      .graph-layout { grid-template-columns: 1fr; }
+      .point-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .point-controls h4, .point-controls .point-count { grid-column: 1 / -1; }
+      .guide-content { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 620px) {
+      .topbar { padding: 10px 14px; }
+      .brand span:last-child { display: none; }
+      .score-box { min-width: 78px; }
+      h1 { font-size: clamp(3.1rem, 18vw, 5.2rem); }
+      .hero { padding-inline: 18px; }
+      .hero-visual { min-height: 280px; }
+      .axis-card { inset-left: 0; min-height: 245px; }
+      .formula-note { font-size: 1rem; }
+      .concept-grid { grid-template-columns: 1fr; }
+      .section-heading { grid-template-columns: 1fr; align-items: start; }
+      .scenario-list { grid-template-columns: 1fr 1fr; }
+      .scenario-btn { min-height: 112px; }
+      .case-intro { grid-template-columns: 1fr; }
+      .case-number { display: none; }
+      .field-grid { grid-template-columns: 1fr; }
+      .formula-builder { grid-template-columns: 1fr 1fr; }
+      .formula-builder .formula-symbol:first-child { grid-column: 1 / -1; }
+      .formula-builder .operator { text-align: center; }
+      canvas { height: 310px; }
+      .point-controls { display: flex; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+    }
+
+    @media print {
+      .topbar, .hero-visual, button, .point-controls, .completion { display: none !important; }
+      body { background: white; color: black; }
+      .hero { display: block; min-height: auto; padding-block: 24px; }
+      .concept-strip, .case-intro, .teacher-guide details { color: black; background: white; border: 1px solid #777; }
+      .concept-grid, .guide-content { display: block; color: black; }
+      .concept-item { color: black; background: white; border-bottom: 1px solid #aaa; }
+      .concept-item p, .case-intro p, .guide-content { color: black; }
+      .stage { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#atividade">Ir para a atividade</a>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">ƒ</span>
+      <span>Grandezas em Movimento</span>
+    </div>
+    <div class="progress-wrap" aria-label="Progresso na situação atual">
+      <div class="progress-label"><span>Progresso da missão</span><span id="progressText">0 de 10 pontos</span></div>
+      <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+    </div>
+    <div class="score-box"><small>Pontuação</small><span id="score">0/10</span></div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">Matemática da vida real • Ensino Médio EJA</p>
+        <h1 id="page-title">Uma grandeza <em>puxa</em> a outra.</h1>
+        <p class="lead">Descubra como trabalho, transporte e consumo podem virar variáveis, funções, tabelas e gráficos. Você experimenta, calcula e recebe uma explicação a cada etapa.</p>
+        <button class="primary-btn" id="startButton">Começar a missão</button>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="axis-card">
+          <span class="graph-line"></span>
+          <span class="dot one"></span>
+          <span class="dot two"></span>
+          <span class="dot three"></span>
+        </div>
+        <div class="formula-note">resultado = início + variação × quantidade</div>
+      </div>
+    </section>
+
+    <section class="concept-strip" aria-label="Conceitos essenciais">
+      <div class="concept-grid">
+        <div class="concept-item">
+          <strong>Variável independente</strong>
+          <p>É a entrada: o valor que informamos, escolhemos ou acompanhamos.</p>
+        </div>
+        <div class="concept-item">
+          <strong>Variável dependente</strong>
+          <p>É o resultado: seu valor muda quando a variável independente muda.</p>
+        </div>
+        <div class="concept-item">
+          <strong>Função</strong>
+          <p>É a regra que associa cada entrada permitida a um único resultado.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="activity-shell" id="atividade" aria-labelledby="activity-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Escolha um contexto</p>
+          <h2 id="activity-title">Agora é com você.</h2>
+          <p>Comece por “Entregas” e depois experimente as outras situações. Seu avanço fica guardado neste navegador.</p>
+        </div>
+        <button class="text-btn" id="resetButton" type="button">Recomeçar esta situação</button>
+      </div>
+
+      <nav class="scenario-list" id="scenarioList" aria-label="Situações disponíveis"></nav>
+
+      <article id="workbench">
+        <header class="case-intro">
+          <div>
+            <span class="label" id="caseKicker">Situação 1</span>
+            <h2 id="caseTitle">Entregas por aplicativo</h2>
+            <p id="caseDescription"></p>
+          </div>
+          <div class="case-number" id="caseNumber" aria-hidden="true">01</div>
+        </header>
+
+        <section class="stage" aria-labelledby="stage1-title">
+          <div class="stage-index">
+            <span>Etapa 1</span>
+            <h3 id="stage1-title">Interprete as grandezas</h3>
+          </div>
+          <div class="stage-content">
+            <p>Observe o que podemos informar primeiro e qual resultado será calculado.</p>
+            <div class="field-grid">
+              <label>Variável independente
+                <span class="hint">A entrada da função</span>
+                <select id="independentSelect"><option value="">Escolha uma grandeza</option></select>
+              </label>
+              <label>Variável dependente
+                <span class="hint">O resultado da função</span>
+                <select id="dependentSelect"><option value="">Escolha uma grandeza</option></select>
+              </label>
+            </div>
+            <button class="primary-btn" id="checkVariables" type="button">Conferir variáveis</button>
+            <div class="feedback" id="variablesFeedback" role="status" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="stage" aria-labelledby="stage2-title">
+          <div class="stage-index">
+            <span>Etapa 2</span>
+            <h3 id="stage2-title">Monte a função</h3>
+          </div>
+          <div class="stage-content">
+            <p>Use a estrutura <strong>resultado = valor inicial + taxa de variação × entrada</strong>.</p>
+            <div class="formula-builder" aria-label="Construtor da função">
+              <span class="formula-symbol" id="formulaLeft">R(n) =</span>
+              <label><span class="sr-only">Valor inicial</span><input id="coefB" inputmode="decimal" placeholder="início" aria-label="Valor inicial"></label>
+              <span class="formula-symbol operator">+</span>
+              <label><span class="sr-only">Taxa de variação</span><input id="coefA" inputmode="decimal" placeholder="taxa" aria-label="Taxa de variação"></label>
+              <span class="formula-symbol operator" id="formulaX">× n</span>
+            </div>
+            <div class="field-grid">
+              <label>O que representa a taxa de variação?
+                <select id="meaningA">
+                  <option value="">Escolha uma interpretação</option>
+                  <option value="rate">Quanto o resultado varia a cada unidade da entrada</option>
+                  <option value="initial">O valor do resultado quando a entrada vale zero</option>
+                  <option value="maximum">O maior valor possível da situação</option>
+                </select>
+              </label>
+              <label>O que representa o valor inicial?
+                <select id="meaningB">
+                  <option value="">Escolha uma interpretação</option>
+                  <option value="rate">Quanto o resultado varia a cada unidade da entrada</option>
+                  <option value="initial">O valor do resultado quando a entrada vale zero</option>
+                  <option value="maximum">O maior valor possível da situação</option>
+                </select>
+              </label>
+            </div>
+            <button class="primary-btn" id="checkFunction" type="button">Testar minha função</button>
+            <div class="feedback" id="functionFeedback" role="status" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="stage" aria-labelledby="stage3-title">
+          <div class="stage-index">
+            <span>Etapa 3</span>
+            <h3 id="stage3-title">Complete a tabela</h3>
+          </div>
+          <div class="stage-content">
+            <p>Substitua cada valor da variável independente na função e registre o resultado.</p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th id="tableXHeader">Entrada</th><th>Cálculo</th><th id="tableYHeader">Resultado</th></tr></thead>
+                <tbody id="valueTable"></tbody>
+              </table>
+            </div>
+            <button class="primary-btn" id="checkTable" type="button">Conferir tabela</button>
+            <div class="feedback" id="tableFeedback" role="status" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="stage" aria-labelledby="stage4-title">
+          <div class="stage-index">
+            <span>Etapa 4</span>
+            <h3 id="stage4-title">Construa o gráfico</h3>
+          </div>
+          <div class="stage-content">
+            <p>Cada linha da tabela forma um par ordenado <strong>(entrada, resultado)</strong>. Marque os pontos um por um.</p>
+            <div class="graph-layout">
+              <div class="canvas-wrap">
+                <canvas id="graphCanvas" width="700" height="390" aria-label="Plano cartesiano para construção do gráfico">Seu navegador não consegue exibir o gráfico. Use a tabela de valores como alternativa.</canvas>
+              </div>
+              <div class="point-controls">
+                <h4>Adicionar um ponto</h4>
+                <label>Entrada
+                  <select id="pointX"></select>
+                </label>
+                <label>Resultado
+                  <input id="pointY" inputmode="decimal" placeholder="valor">
+                </label>
+                <button class="primary-btn" id="addPoint" type="button">Marcar ponto</button>
+                <p class="point-count" id="pointCount">0 de 5 pontos marcados</p>
+              </div>
+            </div>
+            <div class="callout" id="domainNote"></div>
+            <div class="feedback" id="graphFeedback" role="status" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="stage" aria-labelledby="stage5-title">
+          <div class="stage-index">
+            <span>Etapa 5</span>
+            <h3 id="stage5-title">Interprete e explique</h3>
+          </div>
+          <div class="stage-content">
+            <p id="challengePrompt"></p>
+            <div class="field-grid">
+              <label>Sua resposta
+                <span class="hint" id="challengeHint">Digite apenas o valor numérico</span>
+                <input id="challengeAnswer" inputmode="decimal">
+              </label>
+              <div style="align-self:end">
+                <button class="primary-btn" id="checkChallenge" type="button">Conferir desafio</button>
+              </div>
+            </div>
+            <div class="feedback" id="challengeFeedback" role="status" aria-live="polite"></div>
+
+            <label style="margin-top:26px">Explique com suas palavras
+              <span class="hint">O que acontece com o resultado quando a variável independente aumenta?</span>
+              <textarea id="explanation" placeholder="Eu percebi que..."></textarea>
+            </label>
+            <button class="secondary-btn" id="saveExplanation" type="button">Registrar explicação</button>
+            <div class="feedback" id="explanationFeedback" role="status" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <div class="completion" id="completion" role="status">
+          <strong>Missão concluída!</strong>
+          Você relacionou grandezas, construiu uma função e representou a situação no gráfico. Escolha outro contexto para continuar praticando.
+        </div>
+      </article>
+    </section>
+
+    <aside class="teacher-guide">
+      <details>
+        <summary>Guia rápido para o professor</summary>
+        <div class="guide-content">
+          <div>
+            <h3>Organização sugerida</h3>
+            <ul>
+              <li>2 aulas de 50 minutos.</li>
+              <li>Duplas ou grupos de até 4 pessoas.</li>
+              <li>Um contexto diferente por grupo.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Perguntas para mediar</h3>
+            <ul>
+              <li>O que muda nesta situação?</li>
+              <li>O que já existe quando a entrada vale zero?</li>
+              <li>O gráfico cresce, diminui ou permanece?</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Avaliação</h3>
+            <ul>
+              <li>Variáveis: 2 pontos.</li>
+              <li>Função, tabela e gráfico: 6 pontos.</li>
+              <li>Desafio e explicação: 2 pontos.</li>
+            </ul>
+          </div>
+        </div>
+      </details>
+    </aside>
+  </main>
+
+  <footer>Atividade criada para apoiar a aprendizagem de grandezas, variáveis e funções na Educação de Jovens e Adultos.</footer>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var scenarios = {
+        delivery: {
+          index: 1,
+          icon: "🛵",
+          short: "Entregas",
+          subtitle: "valor fixo + comissão",
+          title: "Entregas por aplicativo",
+          description: "Joana recebe uma ajuda fixa de R$ 45,00 por dia, mais R$ 8,00 por entrega realizada.",
+          x: { symbol: "n", name: "número de entregas", unit: "entregas" },
+          y: { symbol: "R", name: "valor recebido", unit: "R$" },
+          a: 8,
+          b: 45,
+          xs: [0, 2, 5, 8, 10],
+          yTicks: [0, 35, 70, 105, 140],
+          yMax: 140,
+          continuous: false,
+          aMeaning: "R$ 8,00 acrescentados por entrega",
+          bMeaning: "a ajuda fixa de R$ 45,00",
+          challenge: "Joana recebeu R$ 101,00 em um dia. Quantas entregas ela realizou?",
+          challengeAnswer: 7,
+          challengeUnit: "entregas",
+          domain: "O número de entregas é contado em valores inteiros. Por isso, os pontos do gráfico ficam separados: não existe 3,5 entregas."
+        },
+        transport: {
+          index: 2,
+          icon: "🚕",
+          short: "Transporte",
+          subtitle: "taxa inicial + distância",
+          title: "Corrida de transporte",
+          description: "Um serviço de transporte cobra R$ 7,00 de taxa inicial, mais R$ 2,50 por quilômetro percorrido.",
+          x: { symbol: "d", name: "distância percorrida", unit: "km" },
+          y: { symbol: "C", name: "custo da corrida", unit: "R$" },
+          a: 2.5,
+          b: 7,
+          xs: [0, 2, 4, 6, 8],
+          yTicks: [0, 7, 14, 21, 28],
+          yMax: 28,
+          continuous: true,
+          aMeaning: "R$ 2,50 acrescentados por quilômetro",
+          bMeaning: "a taxa inicial de R$ 7,00",
+          challenge: "Uma corrida custou R$ 19,50. Quantos quilômetros foram percorridos?",
+          challengeAnswer: 5,
+          challengeUnit: "km",
+          domain: "A distância pode assumir valores decimais, como 3,5 km. Por isso, faz sentido ligar os pontos e representar uma linha contínua."
+        },
+        tank: {
+          index: 3,
+          icon: "💧",
+          short: "Água",
+          subtitle: "quantidade diminuindo",
+          title: "Vazamento na caixa-d’água",
+          description: "Uma caixa contém 600 litros de água e, por causa de um vazamento, perde 30 litros por hora.",
+          x: { symbol: "t", name: "tempo transcorrido", unit: "horas" },
+          y: { symbol: "V", name: "volume de água", unit: "litros" },
+          a: -30,
+          b: 600,
+          xs: [0, 4, 8, 12, 16, 20],
+          yTicks: [0, 150, 300, 450, 600],
+          yMax: 600,
+          continuous: true,
+          aMeaning: "a perda de 30 litros por hora",
+          bMeaning: "os 600 litros existentes no início",
+          challenge: "Depois de quantas horas restarão 390 litros de água?",
+          challengeAnswer: 7,
+          challengeUnit: "horas",
+          domain: "O tempo varia continuamente entre 0 e 20 horas. Depois de 20 horas a caixa fica vazia; valores negativos para o volume não fazem sentido."
+        },
+        work: {
+          index: 4,
+          icon: "🧰",
+          short: "Trabalho",
+          subtitle: "pagamento por hora",
+          title: "Serviço de pintura",
+          description: "Carlos realiza serviços de pintura e recebe R$ 18,00 por hora trabalhada, sem cobrança inicial.",
+          x: { symbol: "h", name: "tempo trabalhado", unit: "horas" },
+          y: { symbol: "P", name: "pagamento recebido", unit: "R$" },
+          a: 18,
+          b: 0,
+          xs: [0, 2, 4, 6, 8],
+          yTicks: [0, 36, 72, 108, 144],
+          yMax: 144,
+          continuous: true,
+          aMeaning: "R$ 18,00 recebidos por hora",
+          bMeaning: "R$ 0,00 quando nenhuma hora foi trabalhada",
+          challenge: "Carlos recebeu R$ 126,00. Quantas horas ele trabalhou?",
+          challengeAnswer: 7,
+          challengeUnit: "horas",
+          domain: "O tempo de trabalho pode incluir partes de uma hora, como 2,5 horas. Assim, os pontos podem ser ligados por uma linha."
+        }
+      };
+
+      var weights = { variables: 2, func: 2, table: 2, graph: 2, challenge: 1, explanation: 1 };
+      var storageKey = "grandezas-em-movimento-v1";
+      var currentKey = "delivery";
+      var progress = loadProgress();
+      var canvas = document.getElementById("graphCanvas");
+      var ctx = canvas.getContext("2d");
+
+      function byId(id) { return document.getElementById(id); }
+
+      function blankState() {
+        return {
+          flags: { variables: false, func: false, table: false, graph: false, challenge: false, explanation: false },
+          plotted: [],
+          form: { independent: "", dependent: "", b: "", a: "", meaningA: "", meaningB: "", table: {}, challenge: "", explanation: "" }
+        };
+      }
+
+      function loadProgress() {
+        try {
+          var saved = JSON.parse(localStorage.getItem(storageKey) || "{}");
+          Object.keys(scenarios).forEach(function (key) {
+            if (!saved[key]) saved[key] = blankState();
+          });
+          return saved;
+        } catch (error) {
+          var fresh = {};
+          Object.keys(scenarios).forEach(function (key) { fresh[key] = blankState(); });
+          return fresh;
+        }
+      }
+
+      function saveProgress() {
+        try { localStorage.setItem(storageKey, JSON.stringify(progress)); } catch (error) { /* O app continua funcionando sem armazenamento. */ }
+      }
+
+      function parseNumber(value) {
+        if (typeof value === "number") return value;
+        return Number(String(value).trim().replace(",", "."));
+      }
+
+      function closeEnough(a, b) { return Number.isFinite(a) && Math.abs(a - b) < 0.001; }
+      function fmt(value) { return Number(value).toLocaleString("pt-BR", { maximumFractionDigits: 2 }); }
+      function money(value) { return "R$ " + Number(value).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+      function calc(scenario, x) { return scenario.b + scenario.a * x; }
+
+      function formulaText(scenario) {
+        var middle = scenario.a < 0 ? " − " + fmt(Math.abs(scenario.a)) : " + " + fmt(scenario.a);
+        if (scenario.b === 0) return scenario.y.symbol + "(" + scenario.x.symbol + ") = " + fmt(scenario.a) + " × " + scenario.x.symbol;
+        return scenario.y.symbol + "(" + scenario.x.symbol + ") = " + fmt(scenario.b) + middle + " × " + scenario.x.symbol;
+      }
+
+      function state() { return progress[currentKey]; }
+
+      function showFeedback(id, type, message) {
+        var el = byId(id);
+        el.className = "feedback show " + type;
+        el.textContent = message;
+      }
+
+      function clearFeedbacks() {
+        document.querySelectorAll(".feedback").forEach(function (el) {
+          el.className = "feedback";
+          el.textContent = "";
+        });
+      }
+
+      function renderScenarioButtons() {
+        var list = byId("scenarioList");
+        list.innerHTML = "";
+        Object.keys(scenarios).forEach(function (key) {
+          var scenario = scenarios[key];
+          var button = document.createElement("button");
+          button.type = "button";
+          button.className = "scenario-btn" + (key === currentKey ? " active" : "");
+          button.setAttribute("aria-pressed", key === currentKey ? "true" : "false");
+          button.innerHTML = '<span class="icon" aria-hidden="true">' + scenario.icon + '</span><strong>' + scenario.short + '</strong><small>' + scenario.subtitle + '</small>';
+          button.addEventListener("click", function () { switchScenario(key); });
+          list.appendChild(button);
+        });
+      }
+
+      function variableOptions(select, scenario) {
+        select.innerHTML = '<option value="">Escolha uma grandeza</option>' +
+          '<option value="' + scenario.x.symbol + '">' + scenario.x.symbol + " — " + scenario.x.name + '</option>' +
+          '<option value="' + scenario.y.symbol + '">' + scenario.y.symbol + " — " + scenario.y.name + '</option>' +
+          '<option value="fixed">valor fixo da situação</option>';
+      }
+
+      function captureForm() {
+        var st = state();
+        st.form.independent = byId("independentSelect").value;
+        st.form.dependent = byId("dependentSelect").value;
+        st.form.b = byId("coefB").value;
+        st.form.a = byId("coefA").value;
+        st.form.meaningA = byId("meaningA").value;
+        st.form.meaningB = byId("meaningB").value;
+        st.form.challenge = byId("challengeAnswer").value;
+        st.form.explanation = byId("explanation").value;
+        document.querySelectorAll(".table-answer").forEach(function (input) { st.form.table[input.dataset.x] = input.value; });
+        saveProgress();
+      }
+
+      function renderScenario() {
+        var scenario = scenarios[currentKey];
+        var st = state();
+        clearFeedbacks();
+        renderScenarioButtons();
+
+        byId("caseKicker").textContent = "Situação " + scenario.index;
+        byId("caseTitle").textContent = scenario.title;
+        byId("caseDescription").textContent = scenario.description;
+        byId("caseNumber").textContent = String(scenario.index).padStart(2, "0");
+
+        variableOptions(byId("independentSelect"), scenario);
+        variableOptions(byId("dependentSelect"), scenario);
+        byId("independentSelect").value = st.form.independent;
+        byId("dependentSelect").value = st.form.dependent;
+
+        byId("formulaLeft").textContent = scenario.y.symbol + "(" + scenario.x.symbol + ") =";
+        byId("formulaX").textContent = "× " + scenario.x.symbol;
+        byId("coefB").value = st.form.b;
+        byId("coefA").value = st.form.a;
+        byId("meaningA").value = st.form.meaningA;
+        byId("meaningB").value = st.form.meaningB;
+
+        byId("tableXHeader").textContent = scenario.x.symbol + " — " + scenario.x.name;
+        byId("tableYHeader").textContent = scenario.y.symbol + " — " + scenario.y.name;
+        var tableBody = byId("valueTable");
+        tableBody.innerHTML = "";
+        scenario.xs.forEach(function (x) {
+          var tr = document.createElement("tr");
+          var savedValue = st.form.table[String(x)] || "";
+          tr.innerHTML = "<td>" + fmt(x) + "</td><td>" + formulaText(scenario).replace(scenario.x.symbol + ")", fmt(x) + ")") + '</td><td><label><span class="sr-only">Resultado para entrada ' + fmt(x) + '</span><input class="table-answer" data-x="' + x + '" inputmode="decimal" value="' + savedValue + '" placeholder="?"></label></td>';
+          tableBody.appendChild(tr);
+        });
+
+        var pointX = byId("pointX");
+        pointX.innerHTML = scenario.xs.map(function (x) { return '<option value="' + x + '">' + fmt(x) + " " + scenario.x.unit + "</option>"; }).join("");
+        byId("pointY").value = "";
+        byId("domainNote").textContent = scenario.domain;
+        byId("challengePrompt").textContent = scenario.challenge;
+        byId("challengeHint").textContent = "Digite apenas o valor numérico em " + scenario.challengeUnit + ".";
+        byId("challengeAnswer").value = st.form.challenge;
+        byId("explanation").value = st.form.explanation;
+
+        updateScore();
+        updatePointCount();
+        requestAnimationFrame(drawGraph);
+      }
+
+      function switchScenario(key) {
+        if (key === currentKey) return;
+        captureForm();
+        currentKey = key;
+        renderScenario();
+        byId("workbench").scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      function scoreFor(st) {
+        return Object.keys(weights).reduce(function (sum, key) { return sum + (st.flags[key] ? weights[key] : 0); }, 0);
+      }
+
+      function updateScore() {
+        var points = scoreFor(state());
+        byId("score").textContent = points + "/10";
+        byId("progressText").textContent = points + " de 10 pontos";
+        byId("progressBar").style.width = (points * 10) + "%";
+        byId("completion").classList.toggle("show", points === 10);
+        renderScenarioButtons();
+        saveProgress();
+      }
+
+      function award(flag) {
+        state().flags[flag] = true;
+        updateScore();
+      }
+
+      function checkVariables() {
+        captureForm();
+        var scenario = scenarios[currentKey];
+        var independent = byId("independentSelect").value;
+        var dependent = byId("dependentSelect").value;
+        if (!independent || !dependent) {
+          showFeedback("variablesFeedback", "info", "Escolha uma opção em cada campo antes de conferir.");
+          return;
+        }
+        if (independent === scenario.x.symbol && dependent === scenario.y.symbol) {
+          award("variables");
+          showFeedback("variablesFeedback", "success", "Correto! " + scenario.x.name + " é a entrada. " + scenario.y.name + " depende desse valor.");
+        } else {
+          showFeedback("variablesFeedback", "error", "Observe a ordem: qual grandeza precisa ser informada para que a outra possa ser calculada?");
+        }
+      }
+
+      function checkFunction() {
+        captureForm();
+        var scenario = scenarios[currentKey];
+        var b = parseNumber(byId("coefB").value);
+        var a = parseNumber(byId("coefA").value);
+        var numbersRight = closeEnough(a, scenario.a) && closeEnough(b, scenario.b);
+        var meaningsRight = byId("meaningA").value === "rate" && byId("meaningB").value === "initial";
+        if (numbersRight && meaningsRight) {
+          award("func");
+          showFeedback("functionFeedback", "success", "Muito bem! " + formulaText(scenario) + ". A taxa representa " + scenario.aMeaning + "; o valor inicial representa " + scenario.bMeaning + ".");
+        } else if (numbersRight) {
+          showFeedback("functionFeedback", "info", "Os números da função estão corretos. Agora reveja o significado da taxa e do valor inicial.");
+        } else {
+          showFeedback("functionFeedback", "error", "Ainda não. Procure no texto o valor que já existe no início e quanto o resultado varia a cada unidade.");
+        }
+      }
+
+      function checkTable() {
+        captureForm();
+        var scenario = scenarios[currentKey];
+        var correct = 0;
+        document.querySelectorAll(".table-answer").forEach(function (input) {
+          var expected = calc(scenario, Number(input.dataset.x));
+          var isCorrect = closeEnough(parseNumber(input.value), expected);
+          input.classList.toggle("correct", isCorrect);
+          input.classList.toggle("incorrect", !isCorrect);
+          if (isCorrect) correct += 1;
+        });
+        if (correct === scenario.xs.length) {
+          award("table");
+          showFeedback("tableFeedback", "success", "Tabela completa! Cada linha já oferece um ponto para o gráfico.");
+        } else {
+          showFeedback("tableFeedback", "error", correct + " de " + scenario.xs.length + " resultados estão corretos. Refaça apenas os campos destacados.");
+        }
+      }
+
+      function addPoint() {
+        var scenario = scenarios[currentKey];
+        var x = parseNumber(byId("pointX").value);
+        var y = parseNumber(byId("pointY").value);
+        var expected = calc(scenario, x);
+        if (!Number.isFinite(y)) {
+          showFeedback("graphFeedback", "info", "Informe o resultado correspondente à entrada escolhida.");
+          return;
+        }
+        if (!closeEnough(y, expected)) {
+          showFeedback("graphFeedback", "error", "O ponto (" + fmt(x) + ", " + fmt(y) + ") não pertence à função. Consulte sua tabela e tente novamente.");
+          return;
+        }
+        if (state().plotted.indexOf(x) === -1) state().plotted.push(x);
+        state().plotted.sort(function (a, b) { return a - b; });
+        byId("pointY").value = "";
+        if (state().plotted.length === scenario.xs.length) {
+          award("graph");
+          showFeedback("graphFeedback", "success", scenario.continuous ? "Gráfico completo! Como a entrada pode variar continuamente, os pontos foram ligados." : "Gráfico completo! Os pontos permanecem separados porque a entrada é uma contagem inteira.");
+        } else {
+          showFeedback("graphFeedback", "success", "Ponto (" + fmt(x) + ", " + fmt(y) + ") marcado corretamente. Continue!");
+        }
+        updatePointCount();
+        saveProgress();
+        drawGraph();
+      }
+
+      function updatePointCount() {
+        var total = scenarios[currentKey].xs.length;
+        byId("pointCount").textContent = state().plotted.length + " de " + total + " pontos marcados";
+      }
+
+      function checkChallenge() {
+        captureForm();
+        var scenario = scenarios[currentKey];
+        var answer = parseNumber(byId("challengeAnswer").value);
+        if (closeEnough(answer, scenario.challengeAnswer)) {
+          award("challenge");
+          showFeedback("challengeFeedback", "success", "Resposta correta: " + fmt(scenario.challengeAnswer) + " " + scenario.challengeUnit + ". Você também pode confirmar esse valor procurando o ponto correspondente no gráfico.");
+        } else if (!Number.isFinite(answer)) {
+          showFeedback("challengeFeedback", "info", "Digite um valor numérico antes de conferir.");
+        } else {
+          showFeedback("challengeFeedback", "error", "Ainda não. Substitua o resultado informado na função e descubra qual deve ser a entrada.");
+        }
+      }
+
+      function saveExplanation() {
+        captureForm();
+        var text = byId("explanation").value.trim();
+        if (text.length < 20) {
+          showFeedback("explanationFeedback", "info", "Escreva uma explicação um pouco mais completa — pelo menos uma frase sobre como as grandezas mudam.");
+          return;
+        }
+        award("explanation");
+        var direction = scenarios[currentKey].a < 0 ? "diminui" : "aumenta";
+        showFeedback("explanationFeedback", "success", "Explicação registrada! Nesta situação, quando a entrada aumenta, o resultado " + direction + ". Compare essa ideia com o formato do gráfico.");
+      }
+
+      function drawGraph() {
+        var scenario = scenarios[currentKey];
+        var rect = canvas.getBoundingClientRect();
+        var width = Math.max(300, rect.width || 700);
+        var height = Math.max(280, rect.height || 390);
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.round(width * dpr);
+        canvas.height = Math.round(height * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, width, height);
+
+        var pad = { left: 58, right: 24, top: 22, bottom: 54 };
+        var plotW = width - pad.left - pad.right;
+        var plotH = height - pad.top - pad.bottom;
+        var xMax = scenario.xs[scenario.xs.length - 1];
+        function px(x) { return pad.left + (x / xMax) * plotW; }
+        function py(y) { return pad.top + plotH - (y / scenario.yMax) * plotH; }
+
+        ctx.fillStyle = "#fffdf8";
+        ctx.fillRect(0, 0, width, height);
+        ctx.lineWidth = 1;
+        ctx.font = "12px system-ui, sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "top";
+
+        scenario.xs.forEach(function (x) {
+          var xPos = px(x);
+          ctx.strokeStyle = "#dbe2de";
+          ctx.beginPath(); ctx.moveTo(xPos, pad.top); ctx.lineTo(xPos, pad.top + plotH); ctx.stroke();
+          ctx.fillStyle = "#44586a";
+          ctx.fillText(fmt(x), xPos, pad.top + plotH + 9);
+        });
+
+        ctx.textAlign = "right";
+        ctx.textBaseline = "middle";
+        scenario.yTicks.forEach(function (y) {
+          var yPos = py(y);
+          ctx.strokeStyle = "#dbe2de";
+          ctx.beginPath(); ctx.moveTo(pad.left, yPos); ctx.lineTo(pad.left + plotW, yPos); ctx.stroke();
+          ctx.fillStyle = "#44586a";
+          ctx.fillText(fmt(y), pad.left - 9, yPos);
+        });
+
+        ctx.strokeStyle = "#10283d";
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(pad.left, pad.top); ctx.lineTo(pad.left, pad.top + plotH); ctx.lineTo(pad.left + plotW, pad.top + plotH); ctx.stroke();
+
+        ctx.fillStyle = "#10283d";
+        ctx.font = "700 12px system-ui, sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "bottom";
+        ctx.fillText(scenario.x.name + " (" + scenario.x.unit + ")", pad.left + plotW / 2, height - 3);
+        ctx.save();
+        ctx.translate(14, pad.top + plotH / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText(scenario.y.name + " (" + scenario.y.unit + ")", 0, 0);
+        ctx.restore();
+
+        var plotted = state().plotted.slice().sort(function (a, b) { return a - b; });
+        if (scenario.continuous && plotted.length === scenario.xs.length) {
+          ctx.strokeStyle = "#177f78";
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          plotted.forEach(function (x, index) {
+            var y = calc(scenario, x);
+            if (index === 0) ctx.moveTo(px(x), py(y)); else ctx.lineTo(px(x), py(y));
+          });
+          ctx.stroke();
+        }
+
+        plotted.forEach(function (x) {
+          var y = calc(scenario, x);
+          ctx.fillStyle = "#e76f3c";
+          ctx.strokeStyle = "#ffffff";
+          ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.arc(px(x), py(y), 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        });
+      }
+
+      byId("startButton").addEventListener("click", function () { byId("atividade").scrollIntoView({ behavior: "smooth" }); });
+      byId("checkVariables").addEventListener("click", checkVariables);
+      byId("checkFunction").addEventListener("click", checkFunction);
+      byId("checkTable").addEventListener("click", checkTable);
+      byId("addPoint").addEventListener("click", addPoint);
+      byId("checkChallenge").addEventListener("click", checkChallenge);
+      byId("saveExplanation").addEventListener("click", saveExplanation);
+      byId("workbench").addEventListener("input", captureForm);
+      byId("workbench").addEventListener("change", captureForm);
+      byId("resetButton").addEventListener("click", function () {
+        if (window.confirm("Deseja apagar o progresso apenas desta situação?")) {
+          progress[currentKey] = blankState();
+          saveProgress();
+          renderScenario();
+        }
+      });
+
+      var resizeTimer;
+      window.addEventListener("resize", function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(drawGraph, 120);
+      });
+
+      renderScenario();
+    })();
+  </script>
+</body>
+</html>
