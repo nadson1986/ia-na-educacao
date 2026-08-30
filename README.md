@@ -1,2 +1,2 @@
 # ia-na-educacao
-Apresentar o projeto da professora Alana
+Apresentando o projeto da professora Alana
